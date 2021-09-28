@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.MemberDao">
+    <select id="getMemberByTelephone"
+            parameterType="string" resultType="com.atguigu.pojo.Member"  >
+        select * from t_member where phoneNumber = #{telephone}
+    </select>
+
+    <insert id="addMember" parameterType="com.atguigu.pojo.Member" keyProperty="id" useGeneratedKeys="true">
+        insert into t_member(fileNumber,name,sex,idCard,phoneNumber,regTime,password,email,birthday,remark)
+        values(#{fileNumber},#{name},#{sex},#{idCard},#{phoneNumber},#{regTime},#{password},#{email},#{birthday},#{remark})
+    </insert>
+
+    <select id="getMemberByMonth" parameterType="string" resultType="integer">
+        select count(*) from t_member where regTime &lt;= #{month}
+    </select>
+
+    <select id="getMemberByToday" resultType="integer" parameterType="string">
+        select count(*) from t_member WHERE regtime = #{today}
+    </select>
+
+    <select id="getAllMember" resultType="integer">
+        select count(*) from t_member
+    </select>
+
+
+    <select id="getMemberByThisWeek" resultType="integer" parameterType="string">
+        select count(*) from t_member where regtime &gt;= #{thisWeekMonday}
+     </select>
+
+    <select id="getMemberByTodayMonthFrist" parameterType="string" resultType="integer">
+        select count(*) from t_member where regtime &gt;= #{todayMonthFrist}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

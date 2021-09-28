@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.SetmealDao">
+    <!--向中间表中插入数据-->
+    <insert id="addSetmealTravelGroup" parameterType="map">
+        insert into t_setmeal_travelgroup(setmeal_id,travelgroup_id) values(#{setmealId},#{travelgroupId})
+    </insert>
+    <!--向套餐表中插入数据-->
+    <insert id="add" parameterType="com.atguigu.pojo.Setmeal" keyProperty="id" useGeneratedKeys="true">
+        insert into
+        t_setmeal(name,code,helpCode,sex,age,price,remark,attention,img)
+         values(#{name},#{code},#{helpCode},#{sex},#{age},#{price},#{remark},#{attention},#{img})
+    </insert>
+
+    <!--分页查询&&条件查询-->
+    <select id="paging" parameterType="string" resultType="com.atguigu.pojo.Setmeal">
+        select * from t_setmeal
+        <where>
+            <if test="value != null and value.length > 0">
+                code = #{value} or name like concat("%",#{value},"%") or helpCode = #{value}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getSetmeal" resultType="com.atguigu.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+
+    <select id="findById" resultMap="rsmap" parameterType="integer">
+        select * from t_setmeal where id = #{id}
+    </select>
+
+    <resultMap id="rsmap" type="com.atguigu.pojo.Setmeal">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="price" property="price"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <result column="img" property="img"></result>
+        <collection property="travelGroups" column="id" select="com.atguigu.dao.TravelGroupDao.findTraveGroupById"></collection>
+    </resultMap>
+</mapper>
+
+

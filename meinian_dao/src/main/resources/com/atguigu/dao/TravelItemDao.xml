@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.TravelItemDao">
+    <insert id="add" parameterType="com.atguigu.pojo.TravelItem">
+        insert into
+        t_travelitem(code, name, sex, age, price, type, remark, attention)
+        values(#{code}, #{name}, #{sex}, #{age}, #{price}, #{type}, #{remark}, #{attention})
+
+    </insert>
+
+    <!--分页查询-->
+    <select id="paging" parameterType="java.lang.String" resultType="com.atguigu.pojo.TravelItem">
+        select * from t_travelitem
+        <where>
+            <if test="value != null and value.length > 0">
+                code = #{value} or name like concat("%",#{value},"%")
+            </if>
+        </where>
+    </select>
+
+    <!--删除自由行-->
+    <delete id="delete" parameterType="integer">
+        delete from t_travelitem
+        where
+        id = #{id}
+    </delete>
+
+    <!--修改自由行-->
+    <update id="update" parameterType="com.atguigu.pojo.TravelItem">
+        update t_travelitem
+        <set>
+            <if test="code!=null and code.length>0">
+                code=#{code},
+            </if>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="sex!=null and sex.length>0">
+                sex=#{sex},
+            </if>
+            <if test="age!=null and age.length>0">
+                age=#{age},
+            </if>
+            <if test="price!=null">
+                price=#{price},
+            </if>
+            <if test="type!=null and type.length>0">
+                type=#{type},
+            </if>
+            <if test="remark!=null and remark.length>0">
+                remark=#{remark},
+            </if>
+            <if test="attention!=null and attention.length>0">
+                attention=#{attention},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--获取所有自由行-->
+    <select id="getAll" resultType="com.atguigu.pojo.TravelItem">
+        select
+        id,code,name,sex,age,price,type,attention,remark
+        from
+        t_travelitem
+    </select>
+
+    <select id="findTraveItemById" parameterType="int" resultMap="rsmap">
+        SELECT *
+        FROM t_travelitem
+        WHERE id IN (SELECT travelitem_id FROM t_travelgroup_travelitem WHERE travelgroup_id = #{id})
+    </select>
+
+    <resultMap id="rsmap" type="com.atguigu.pojo.TravelItem">
+        <id column="id" property="id"></id>
+        <result column="code" property="code"></result>
+        <result column="name" property="name"></result>
+        <result column="sex" property="sex"></result>
+        <result column="age" property="age"></result>
+        <result column="price" property="price"></result>
+        <result column="type" property="type"></result>
+        <result column="attention" property="attention"></result>
+        <result column="remark" property="remark"></result>
+    </resultMap>
+</mapper>

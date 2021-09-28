@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.OrderDao">
+    <select id="findOrder" parameterType="com.atguigu.pojo.Order" resultType="com.atguigu.pojo.Order">
+        select * from t_order
+        <where>
+            <if test="memberId != null">
+                and member_id = #{memberId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+            <if test="orderDate != null">
+                and orderDate = #{orderDate}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addOrder" parameterType="com.atguigu.pojo.Order" keyProperty="id" useGeneratedKeys="true">
+        insert into
+        t_order(member_id,orderDate,orderType,orderStatus,setmeal_id)
+        values(#{memberId},#{orderDate},#{orderType},#{orderStatus},#{setmealId})
+    </insert>
+
+    <select id="findById" parameterType="integer" resultType="map">
+        SELECT m.name member,s.name setmeal,o.orderDate orderDate,o.orderType orderType
+        FROM t_order o,t_member m,t_setmeal s
+        WHERE o.member_id = m.id AND o.setmeal_id = s.id AND o.id = #{id};
+    </select>
+
+    <select id="getSetMealCount" resultType="map">
+        SELECT s.name  name,COUNT(o.setmeal_id) value  FROM t_setmeal s , t_order o WHERE s.id = o.setmeal_id GROUP BY s.name;
+    </select>
+
+    <select id="getOrderByToday" resultType="integer" parameterType="string">
+        select count(*) from t_order where orderDate = #{today}
+    </select>
+
+    <select id="todayVisitsNumber" parameterType="string" resultType="integer">
+        select count(id) from t_order where orderStatus = '已出游' and orderDate = #{today};
+    </select>
+
+    <select id="thisWeekOrderNumber" parameterType="string" resultType="integer">
+       select count(id) from t_order where orderDate between #{thisWeekMonday} and #{today};
+    </select>
+
+    <select id="thisWeekVisitsNumber" resultType="integer" parameterType="string">
+        SELECT COUNT(id) FROM t_order
+        WHERE orderStatus = '已出游' AND orderDate BETWEEN #{thisWeekMonday} AND #{today};
+    </select>
+
+    <select id="thisMonthOrderNumber" parameterType="string" resultType="integer">
+        select count(id) from t_order where orderDate &gt;= #{todayMonthFrist}
+    </select>
+
+    <select id="thisMonthVisitsNumber" parameterType="string" resultType="integer">
+      SELECT COUNT(id)
+      FROM t_order
+       WHERE orderDate BETWEEN #{todayMonthFrist} AND #{today} AND orderstatus = '已出游';
+    </select>
+
+    <select id="hotSetmeal" resultType="map">
+        select
+         s.name name,count(o.setmeal_id) setmeal_count , count(o.setmeal_id)/(select count(*) from t_order) proportion
+        from t_setmeal s , t_order o
+        where s.id = o.setmeal_id
+        group by o.setmeal_id
+        order by setmeal_count desc
+        limit 0,4;
+    </select>
+</mapper>
